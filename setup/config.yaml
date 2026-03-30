@@ -1,0 +1,20 @@
+write-kubeconfig-mode: "0644"
+
+disable:
+  - traefik
+  - servicelb
+
+flannel-backend: "none"
+disable-network-policy: true
+
+tls-san:
+  - "localhost"
+  - "127.0.0.1"
+  - "100.107.29.101"
+  - "homelab.tilapia-denebola.ts.net"
+
+cluster-cidr: "10.42.0.0/16"
+service-cidr: "10.43.0.0/16"
+
+kubelet-arg:
+  - "max-pods=110"

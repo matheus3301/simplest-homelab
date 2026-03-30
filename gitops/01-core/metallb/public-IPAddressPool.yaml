@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: public
+  namespace: metallb
+spec:
+  addresses:
+    - 192.168.0.156-192.168.0.160
