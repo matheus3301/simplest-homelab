@@ -17,9 +17,7 @@ spec:
       values: |
         name: private
         service:
-          type: LoadBalancer
-          annotations:
-            metallb.io/address-pool: private
+          type: ClusterIP
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system

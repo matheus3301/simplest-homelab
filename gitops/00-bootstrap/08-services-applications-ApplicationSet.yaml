@@ -8,10 +8,10 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
     - git:
-        repoURL: https://github.com/matheus3301/homelab.git
+        repoURL: https://github.com/matheus3301/simplest-homelab.git
         revision: HEAD
         directories:
-          - path: kubernetes/02-services/*
+          - path: gitops/02-services/*
   template:
     metadata:
       name: 'services-{{ .path.basename }}-apps'
@@ -21,7 +21,7 @@ spec:
     spec:
       project: services
       source:
-        repoURL: https://github.com/matheus3301/homelab.git
+        repoURL: https://github.com/matheus3301/simplest-homelab.git
         targetRevision: HEAD
         path: '{{ .path.path }}'
         directory:
