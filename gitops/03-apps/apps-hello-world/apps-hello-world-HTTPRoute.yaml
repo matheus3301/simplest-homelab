@@ -5,11 +5,11 @@ metadata:
   namespace: apps-hello-world
 spec:
   parentRefs:
-    - name: private
+    - name: public
       namespace: istio-system
       sectionName: http
   hostnames:
-    - "hello-world.local"
+    - "hello.mmonteiro.dev"
   rules:
     - matches:
         - path:
