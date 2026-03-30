@@ -12,7 +12,9 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: apps-*
       server: https://kubernetes.default.svc
-  clusterResourceWhitelist: []
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
   namespaceResourceWhitelist:
     - group: ''
       kind: ConfigMap
