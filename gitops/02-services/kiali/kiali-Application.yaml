@@ -21,6 +21,7 @@ spec:
             - "**"
           ingress:
             enabled: false
+          service_type: "LoadBalancer"
           service_annotations:
             tailscale.com/expose: "true"
             tailscale.com/hostname: "kiali"
