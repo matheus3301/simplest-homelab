@@ -21,6 +21,9 @@ spec:
             - "**"
           ingress:
             enabled: false
+          service_annotations:
+            tailscale.com/expose: "true"
+            tailscale.com/hostname: "kiali"
         external_services:
           prometheus:
             url: "http://prometheus-server.monitoring.svc.cluster.local:80"
