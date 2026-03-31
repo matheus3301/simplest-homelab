@@ -1,0 +1,12 @@
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: private-gateway
+  namespace: tailscale
+spec:
+  hostname: private-gateway
+  subnetRouter:
+    advertiseRoutes:
+      - "10.43.0.0/16"
+  tags:
+    - "tag:k8s"
