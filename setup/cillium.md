@@ -16,6 +16,10 @@ cilium install --version 1.19.2 --set=ipam.operator.clusterPoolIPv4PodCIDRList="
 
 cilium status --wait
 
-# step 4
+# step 4 - required for istio ambient cni to work alongside cilium
+
+cilium config set cni-exclusive false
+
+# step 5
 
 cilium connectivity test
