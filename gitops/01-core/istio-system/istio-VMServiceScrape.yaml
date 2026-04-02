@@ -14,17 +14,16 @@ spec:
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMPodScrape
 metadata:
-  name: istio-dataplane
+  name: istio-gateways
   namespace: istio-system
 spec:
   podMetricsEndpoints:
     - port: http-envoy-prom
       path: /stats/prometheus
   selector:
-    matchLabels:
-      service.istio.io/canonical-name: ""
-  namespaceSelector:
-    any: true
+    matchExpressions:
+      - key: gateway.istio.io/managed
+        operator: Exists
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMPodScrape
@@ -33,7 +32,7 @@ metadata:
   namespace: istio-system
 spec:
   podMetricsEndpoints:
-    - port: http-monitoring
+    - port: ztunnel-stats
       path: /metrics
   selector:
     matchLabels:
