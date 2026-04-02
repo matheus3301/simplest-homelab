@@ -9,4 +9,4 @@ spec:
       path: /metrics
   selector:
     matchLabels:
-      tailscale.com/proxy-metrics: "true"
+      tailscale.com/managed: "true"
