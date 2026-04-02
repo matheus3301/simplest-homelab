@@ -23,12 +23,14 @@ spec:
             enabled: false
         external_services:
           prometheus:
-            url: "http://prometheus-server.monitoring.svc.cluster.local:80"
+            url: "http://vmsingle-victoria-metrics-k8s-stack.monitoring.svc.cluster.local:8429"
           grafana:
-            enabled: false
+            enabled: true
+            in_cluster_url: "http://victoria-metrics-k8s-stack-grafana.monitoring.svc.cluster.local:80"
+            url: "https://monitoring.mmonteiro.dev"
   destination:
     server: https://kubernetes.default.svc
-    namespace: kiali
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true

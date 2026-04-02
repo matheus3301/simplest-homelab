@@ -1,0 +1,75 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: victoria-metrics-k8s-stack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: services
+  source:
+    repoURL: https://victoriametrics.github.io/helm-charts/
+    chart: victoria-metrics-k8s-stack
+    targetRevision: 0.72.5
+    helm:
+      values: |
+        argocdReleaseOverride: victoria-metrics-k8s-stack
+        victoria-metrics-operator:
+          enabled: true
+          crds:
+            plain: true
+        vmsingle:
+          enabled: true
+          spec:
+            retentionPeriod: "2w"
+            storage:
+              resources:
+                requests:
+                  storage: 10Gi
+        grafana:
+          enabled: true
+          adminPassword: admin
+          sidecar:
+            datasources:
+              enabled: true
+              label: grafana_datasource
+              labelValue: "1"
+            dashboards:
+              enabled: true
+              label: grafana_dashboard
+              labelValue: "1"
+        defaultDashboards:
+          enabled: true
+        defaultRules:
+          create: true
+        kubelet:
+          enabled: true
+          spec:
+            metricRelabelConfigs:
+              - action: labeldrop
+                regex: (uid)
+              - action: labeldrop
+                regex: (id|name)
+              - action: drop
+                source_labels: [__name__]
+                regex: (rest_client_request_duration_seconds_bucket|rest_client_request_duration_seconds_sum|rest_client_request_duration_seconds_count)
+        kubeApiServer:
+          enabled: true
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        kubeProxy:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
