@@ -1,0 +1,40 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: istiod
+  namespace: istio-system
+spec:
+  endpoints:
+    - port: http-monitoring
+      path: /metrics
+  selector:
+    matchLabels:
+      app: istiod
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: istio-dataplane
+  namespace: istio-system
+spec:
+  podMetricsEndpoints:
+    - port: http-envoy-prom
+      path: /stats/prometheus
+  selector:
+    matchLabels:
+      service.istio.io/canonical-name: ""
+  namespaceSelector:
+    any: true
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: ztunnel
+  namespace: istio-system
+spec:
+  podMetricsEndpoints:
+    - port: http-monitoring
+      path: /metrics
+  selector:
+    matchLabels:
+      app: ztunnel
