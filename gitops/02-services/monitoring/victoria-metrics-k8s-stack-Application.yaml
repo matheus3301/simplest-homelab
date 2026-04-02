@@ -63,6 +63,11 @@ spec:
           enabled: false
         kubeProxy:
           enabled: false
+  ignoreDifferences:
+    - group: ""
+      kind: "*"
+      jsonPointers:
+        - /metadata/finalizers
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
