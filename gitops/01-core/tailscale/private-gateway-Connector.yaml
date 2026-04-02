@@ -4,6 +4,7 @@ metadata:
   name: private-gateway
   namespace: tailscale
 spec:
+  proxyClass: metrics-enabled
   hostname: private-gateway
   subnetRouter:
     advertiseRoutes:
