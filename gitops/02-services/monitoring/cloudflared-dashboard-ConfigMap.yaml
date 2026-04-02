@@ -10,12 +10,12 @@ data:
     {
       "__inputs": [
         {
-          "name": "DS_PROMETHEUS",
-          "label": "Prometheus",
+          "name": "DS_VICTORIAMETRICS",
+          "label": "VictoriaMetrics",
           "description": "",
           "type": "datasource",
           "pluginId": "prometheus",
-          "pluginName": "Prometheus"
+          "pluginName": "VictoriaMetrics"
         }
       ],
       "__elements": {},
@@ -29,7 +29,7 @@ data:
         {
           "type": "datasource",
           "id": "prometheus",
-          "name": "Prometheus",
+          "name": "VictoriaMetrics",
           "version": "1.0.0"
         },
         {
@@ -73,7 +73,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_VICTORIAMETRICS}"
           },
           "fieldConfig": {
             "defaults": {
@@ -151,7 +151,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_VICTORIAMETRICS}"
               },
               "editorMode": "builder",
               "expr": "cloudflared_tunnel_ha_connections",
@@ -166,7 +166,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_VICTORIAMETRICS}"
           },
           "description": "Concurrent requests proxied through each tunnel",
           "fieldConfig": {
@@ -245,7 +245,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_VICTORIAMETRICS}"
               },
               "editorMode": "builder",
               "expr": "cloudflared_tunnel_concurrent_requests_per_tunnel",
@@ -260,7 +260,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_VICTORIAMETRICS}"
           },
           "fieldConfig": {
             "defaults": {
@@ -339,7 +339,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_VICTORIAMETRICS}"
               },
               "editorMode": "builder",
               "expr": "sum by(status_code) (increase(cloudflared_tunnel_response_by_code[$__rate_interval]))",
@@ -355,7 +355,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_VICTORIAMETRICS}"
           },
           "fieldConfig": {
             "defaults": {
@@ -434,7 +434,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_VICTORIAMETRICS}"
               },
               "editorMode": "builder",
               "expr": "sum by(instance) (increase(cloudflared_tunnel_total_requests[$__rate_interval]))",
@@ -450,7 +450,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_VICTORIAMETRICS}"
           },
           "fieldConfig": {
             "defaults": {
@@ -529,7 +529,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_VICTORIAMETRICS}"
               },
               "editorMode": "builder",
               "expr": "changes(cloudflared_orchestration_config_version[$__interval])",
@@ -545,7 +545,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${DS_VICTORIAMETRICS}"
           },
           "fieldConfig": {
             "defaults": {
@@ -628,7 +628,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "${DS_VICTORIAMETRICS}"
               },
               "editorMode": "builder",
               "expr": "increase(cloudflared_tunnel_request_errors[$__rate_interval])",
