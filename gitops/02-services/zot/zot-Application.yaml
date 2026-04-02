@@ -1,0 +1,66 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: zot
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: services
+  source:
+    repoURL: https://zotregistry.dev/helm-charts
+    chart: zot
+    targetRevision: 0.1.104
+    helm:
+      values: |
+        replicaCount: 1
+        service:
+          type: ClusterIP
+          port: 5000
+        persistence: true
+        pvc:
+          create: true
+          storage: 15Gi
+          accessModes:
+            - ReadWriteOnce
+        mountConfig: true
+        configFiles:
+          config.json: |-
+            {
+              "storage": { "rootDirectory": "/var/lib/registry" },
+              "http": {
+                "address": "0.0.0.0",
+                "port": "5000",
+                "auth": { "htpasswd": { "path": "/secret/htpasswd" } },
+                "accessControl": {
+                  "repositories": {
+                    "**": {
+                      "policies": [{
+                        "users": ["admin"],
+                        "actions": ["read", "create", "update", "delete"]
+                      }],
+                      "defaultPolicy": ["read"]
+                    }
+                  },
+                  "adminPolicy": {
+                    "users": ["admin"],
+                    "actions": ["read", "create", "update", "delete"]
+                  }
+                }
+              },
+              "log": { "level": "info" },
+              "extensions": {
+                "ui": { "enable": true },
+                "search": { "enable": true, "cve": null }
+              }
+            }
+        mountSecret: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: zot
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
