@@ -31,6 +31,10 @@ spec:
                 secretKeyRef:
                   name: tunnel-token
                   key: token
+          ports:
+            - name: metrics
+              containerPort: 2000
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /ready

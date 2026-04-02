@@ -1,0 +1,30 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: cloudflared-alerts
+  namespace: cloudflared
+spec:
+  groups:
+    - name: cloudflared
+      rules:
+        - alert: CloudflaredTunnelDown
+          expr: absent(cloudflared_tunnel_active_sessions) == 1
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Cloudflare tunnel has no active sessions"
+        - alert: CloudflaredTunnelErrors
+          expr: rate(cloudflared_tunnel_request_errors_total[5m]) > 0.1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cloudflare tunnel is experiencing errors ({{ $value }}/s)"
+        - alert: CloudflaredTunnelHighLatency
+          expr: cloudflared_tunnel_response_time_seconds{quantile="0.9"} > 2
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cloudflare tunnel p90 latency above 2s"

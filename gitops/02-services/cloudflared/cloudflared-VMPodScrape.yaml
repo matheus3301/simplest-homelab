@@ -1,0 +1,12 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: cloudflared
+  namespace: cloudflared
+spec:
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+  selector:
+    matchLabels:
+      app: cloudflared
