@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: services-manifests
+  name: manifests
   namespace: argocd
 spec:
   goTemplate: true
@@ -11,15 +11,19 @@ spec:
         repoURL: https://github.com/matheus3301/simplest-homelab.git
         revision: HEAD
         directories:
-          - path: gitops/02-services/*
+          - path: gitops/*/*
   template:
     metadata:
-      name: 'services-{{ .path.basename }}-manifests'
+      name: >-
+        {{- $p := splitList "/" .path.path -}}
+        {{ printf "%s-%s-manifests" (index $p 1) (index $p 2) | lower }}
       namespace: argocd
-      annotations:
-        argocd.argoproj.io/sync-wave: "2"
     spec:
-      project: services
+      project: >-
+        {{- $layer := index (splitList "/" .path.path) 1 -}}
+        {{- if hasPrefix "01-" $layer }}core
+        {{- else if hasPrefix "02-" $layer }}services
+        {{- else }}apps{{ end }}
       source:
         repoURL: https://github.com/matheus3301/simplest-homelab.git
         targetRevision: HEAD

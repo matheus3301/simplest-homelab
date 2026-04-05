@@ -4,7 +4,6 @@ disable:
   - traefik
   - servicelb
 
-flannel-backend: "none"
 disable-network-policy: true
 
 tls-san:
