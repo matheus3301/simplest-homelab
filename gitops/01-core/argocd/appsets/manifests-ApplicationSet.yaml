@@ -15,15 +15,12 @@ spec:
   template:
     metadata:
       name: >-
-        {{- $p := splitList "/" .path.path -}}
-        {{ printf "%s-%s-manifests" (index $p 1) (index $p 2) | lower }}
+        {{- $layer := index (splitList "/" .path.path) 1 -}}
+        {{- $component := index (splitList "/" .path.path) 2 -}}
+        {{- if hasPrefix "01-" $layer }}core{{- else if hasPrefix "02-" $layer }}services{{- else }}apps{{- end }}-{{ $component }}-manifests
       namespace: argocd
     spec:
-      project: >-
-        {{- $layer := index (splitList "/" .path.path) 1 -}}
-        {{- if hasPrefix "01-" $layer }}core
-        {{- else if hasPrefix "02-" $layer }}services
-        {{- else }}apps{{ end }}
+      project: '{{- $layer := index (splitList "/" .path.path) 1 -}}{{- if hasPrefix "01-" $layer }}core{{- else if hasPrefix "02-" $layer }}services{{- else }}apps{{- end }}'
       source:
         repoURL: https://github.com/matheus3301/simplest-homelab.git
         targetRevision: HEAD
