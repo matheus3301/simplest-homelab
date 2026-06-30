@@ -8,6 +8,8 @@ spec:
   hostname: private-gateway
   subnetRouter:
     advertiseRoutes:
-      - "10.43.241.105/32"
+      # Must match the private-istio gateway ClusterIP and the *.mmonteiro.dev
+      # wildcard DNS record in Cloudflare.
+      - "10.43.117.2/32"
   tags:
     - "tag:k8s"
