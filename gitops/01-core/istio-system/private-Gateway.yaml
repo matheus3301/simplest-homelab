@@ -7,6 +7,12 @@ metadata:
     networking.istio.io/service-type: ClusterIP
 spec:
   gatewayClassName: istio
+  # Pin the ClusterIP so it matches the wildcard DNS (*.mmonteiro.dev) and the
+  # Tailscale connector's advertised route. Without this, k3s assigns a random
+  # ClusterIP from the service CIDR and private services become unreachable.
+  addresses:
+    - type: IPAddress
+      value: 10.43.241.105
   listeners:
     - name: http
       port: 80
