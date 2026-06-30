@@ -21,6 +21,7 @@ spec:
     helm:
       values: |
         profile: ambient
+        platform: k3s
         pilot:
           resources:
             requests:

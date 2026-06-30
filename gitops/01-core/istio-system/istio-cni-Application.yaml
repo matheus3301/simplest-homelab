@@ -16,6 +16,10 @@ spec:
     helm:
       values: |
         profile: ambient
+        # k3s stores CNI config/binaries outside the default /etc/cni/net.d
+        # and /opt/cni/bin; this profile points istio-cni at the k3s paths
+        # so it can chain onto flannel.
+        platform: k3s
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system

@@ -13,6 +13,9 @@ spec:
     repoURL: https://istio-release.storage.googleapis.com/charts
     chart: ztunnel
     targetRevision: 1.28.1
+    helm:
+      values: |
+        platform: k3s
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
