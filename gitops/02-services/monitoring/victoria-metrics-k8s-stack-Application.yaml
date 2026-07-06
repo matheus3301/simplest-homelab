@@ -98,6 +98,17 @@ spec:
       kind: "*"
       jsonPointers:
         - /metadata/finalizers
+    # The operator self-injects its webhook CA; don't let selfHeal revert it
+    # (would break admission until the operator re-injects).
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jqPathExpressions:
+        - '.webhooks[].clientConfig.caBundle'
+    - group: ""
+      kind: Secret
+      name: victoria-metrics-k8s-stack-victoria-metrics-operator-validation
+      jsonPointers:
+        - /data
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
