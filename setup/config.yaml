@@ -9,8 +9,9 @@ disable-network-policy: true
 tls-san:
   - "localhost"
   - "127.0.0.1"
-  - "100.107.29.101"
-  - "homelab.tilapia-denebola.ts.net"
+  - "5.161.189.216"
+  - "100.69.221.34"
+  - "javazap-cloud.tilapia-denebola.ts.net"
 
 cluster-cidr: "10.42.0.0/16"
 service-cidr: "10.43.0.0/16"
