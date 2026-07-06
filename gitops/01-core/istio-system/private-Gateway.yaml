@@ -7,11 +7,10 @@ metadata:
     networking.istio.io/service-type: ClusterIP
 spec:
   gatewayClassName: istio
-  addresses:
-    # Pin the ClusterIP so it matches the Tailscale Connector advertised route
-    # (private-gateway-Connector.yaml) and the *.mmonteiro.dev wildcard DNS.
-    - type: IPAddress
-      value: 10.43.117.2
+  # NOTE: Istio 1.28 does not honor spec.addresses to pin the ClusterIP of the
+  # generated Service, so the ClusterIP is dynamic. The Tailscale Connector
+  # (private-gateway-Connector.yaml) advertises the actual assigned ClusterIP,
+  # which must also match the *.mmonteiro.dev wildcard DNS record in Cloudflare.
   listeners:
     - name: http
       port: 80

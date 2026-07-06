@@ -9,7 +9,9 @@ spec:
   subnetRouter:
     advertiseRoutes:
       # Must match the private-istio gateway ClusterIP and the *.mmonteiro.dev
-      # wildcard DNS record in Cloudflare.
-      - "10.43.117.2/32"
+      # wildcard DNS record in Cloudflare. Istio assigns this ClusterIP
+      # dynamically (spec.addresses pinning is a no-op on Istio 1.28); if the
+      # private-istio Service is ever recreated, update this + the DNS record.
+      - "10.43.45.223/32"
   tags:
     - "tag:k8s"
