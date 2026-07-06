@@ -21,14 +21,45 @@ spec:
         vmsingle:
           enabled: true
           spec:
-            retentionPeriod: "2w"
+            # Lightweight homelab: short retention + capped cache/memory
+            retentionPeriod: "7d"
+            extraArgs:
+              memory.allowedPercent: "40"
+            resources:
+              requests:
+                cpu: 50m
+                memory: 96Mi
+              limits:
+                memory: 384Mi
             storage:
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 8Gi
+        vmagent:
+          spec:
+            resources:
+              requests:
+                cpu: 25m
+                memory: 64Mi
+              limits:
+                memory: 160Mi
+        # Alerting stack disabled: no alertmanager receivers configured, so
+        # vmalert + alertmanager + default rules were pure overhead on a homelab.
+        alertmanager:
+          enabled: false
+        vmalert:
+          enabled: false
+        defaultRules:
+          create: false
         grafana:
           enabled: true
           adminPassword: admin
+          resources:
+            requests:
+              cpu: 25m
+              memory: 96Mi
+            limits:
+              memory: 224Mi
           sidecar:
             datasources:
               enabled: true
@@ -40,8 +71,6 @@ spec:
               labelValue: "1"
         defaultDashboards:
           enabled: true
-        defaultRules:
-          create: true
         kubelet:
           enabled: true
           spec:
