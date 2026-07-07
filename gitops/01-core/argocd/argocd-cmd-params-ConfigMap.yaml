@@ -8,3 +8,9 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   server.insecure: "true"
+  # Homelab memory tuning: fewer concurrent processors/parallelism than the
+  # defaults (20/10/20) cuts application-controller + repo-server memory.
+  controller.status.processors: "4"
+  controller.operation.processors: "2"
+  controller.kubectl.parallelism.limit: "4"
+  reposerver.parallelism.limit: "2"
