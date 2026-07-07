@@ -1,5 +1,9 @@
 # Cilium Troubleshooting
 
+> **Note:** The current deployment does **not** use Cilium — k3s runs its default
+> flannel CNI (see `deployment-runbook.md`). This doc is retained for reference if
+> Cilium is ever reintroduced.
+
 Everything we hit running Cilium v1.19.2 on a single-node k3s homelab with Istio ambient mode.
 
 ## Installation

@@ -13,7 +13,7 @@ graph TB
         Device[Your Devices<br/>iPhone, Mac, etc.]
     end
 
-    subgraph k3s[k3s + Cilium CNI]
+    subgraph k3s[k3s + flannel CNI]
         subgraph GitOps
             ArgoCD
             Vault
@@ -32,7 +32,6 @@ graph TB
         CertManager[cert-manager<br/>Let's Encrypt]
 
         subgraph Services
-            Kiali
             Zot[Zot Registry]
         end
 
@@ -48,7 +47,6 @@ graph TB
 
     Device -->|WireGuard| Connector
     Connector --> PrivGW
-    PrivGW -->|HTTPRoute| Kiali
     PrivGW -->|HTTPRoute| Vault
     PrivGW -->|HTTPRoute| ArgoCD
 
@@ -71,7 +69,7 @@ flowchart LR
 ```
 
 - Cloudflare handles TLS termination, CDN, WAF, DDoS protection
-- cloudflared connects outbound via HTTP/2 (QUIC broken with Cilium VXLAN MTU)
+- cloudflared connects outbound via HTTP/2 (QUIC broken with flannel VXLAN MTU)
 - Tunnel config managed in Cloudflare dashboard (remotely managed)
 - HTTPRoutes on the public gateway match hostnames and route to services
 - Example: `hello.mmonteiro.dev` → hello-world app
@@ -98,7 +96,6 @@ All services use the same domain. Resolution differs based on where you are:
 | Service | Type | URL | Access |
 |---------|------|-----|--------|
 | Hello World | Public | hello.mmonteiro.dev | Internet (Cloudflare) |
-| Kiali | Private | kiali.mmonteiro.dev | Tailnet only |
 | Vault | Private | vault.mmonteiro.dev | Tailnet only |
 | ArgoCD | Private | argocd.mmonteiro.dev | Tailnet only |
 
@@ -177,7 +174,7 @@ flowchart LR
 gitops/
 ├── 00-bootstrap/     # ArgoCD raw install, repo, projects, ApplicationSets
 ├── 01-core/          # Infrastructure: Istio, Vault, ESO, cert-manager, Tailscale
-├── 02-services/      # Shared services: Kiali, cloudflared, Zot registry
+├── 02-services/      # Shared services: monitoring (VictoriaMetrics), cloudflared, Zot registry
 └── 03-apps/          # User applications: hello-world, etc.
 ```
 

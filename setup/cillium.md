@@ -1,3 +1,7 @@
+# NOT USED in the current deployment — k3s runs its default flannel CNI, and
+# istio-cni chains onto flannel (platform: k3s). These steps are retained only
+# for reference if Cilium is ever reintroduced. See docs/deployment-runbook.md.
+
 # step 1
 
 CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
