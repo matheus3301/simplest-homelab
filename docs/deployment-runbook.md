@@ -59,12 +59,12 @@ completes, restart ESO: `kubectl rollout restart deploy/external-secrets -n exte
 ### 5. Istio does NOT honor `spec.addresses` (ClusterIP pin)
 On Istio 1.28, pinning the private gateway's ClusterIP via Gateway
 `spec.addresses` is a **no-op** — the `private-istio` Service gets a *dynamic*
-ClusterIP. The Tailscale Connector route and the Cloudflare wildcard DNS must
-match the **actual** assigned ClusterIP:
+ClusterIP. The advertised subnet route (see below) and the Cloudflare wildcard
+DNS must match the **actual** assigned ClusterIP:
 ```bash
 kubectl get svc private-istio -n istio-system -o jsonpath='{.spec.clusterIP}'
 ```
-Put that value in `private-gateway-Connector.yaml` (`advertiseRoutes`) and the
+Put that value in the host's `tailscale set --advertise-routes` and the
 `*.mmonteiro.dev` A record. If the Service is ever recreated, the IP changes and
 both must be updated.
 
@@ -85,11 +85,25 @@ The unseal key + root token are single-shard — losing them means losing the Va
   managed in the Cloudflare Zero Trust dashboard (the DNS-scoped API token cannot
   edit tunnel config).
 - **Private** (`*.mmonteiro.dev`): wildcard A record → private-istio ClusterIP
-  (**DNS only, proxy OFF**). Reachable only from the tailnet via the Connector.
-- **Tailnet route approval:** the Connector's advertised route
-  (`<clusterIP>/32`) must be approved in the Tailscale admin console (no
-  `autoApprovers` configured). Approve it, or add an `autoApprovers.routes` entry
-  for `tag:k8s` so future ClusterIP changes self-approve.
+  (**DNS only, proxy OFF**). Reachable only from the tailnet via the subnet route.
+- **Subnet router = the HOST's tailscaled, not an in-cluster Connector.** The host
+  advertises the ClusterIP as a subnet route and forwards to it (the host is the
+  k8s node, so kube-proxy DNATs the ClusterIP to the backend pod):
+  ```bash
+  tailscale set --advertise-routes=<private-istio-clusterIP>/32   # on the host
+  ufw allow 41641/udp                                             # WireGuard underlay
+  ```
+  Why not the operator `Connector`? The Connector runs as a **pod behind the
+  node's MASQUERADE (symmetric NAT)** — `netcheck` shows `MappingVariesByDestIP:
+  true`, so it can only reach the tailnet via a **DERP relay** (bandwidth-capped).
+  The host has a public IP with no NAT (`MappingVariesByDestIP: false`), so it
+  gets a **direct, full-throughput** WireGuard path. (Note: for a client far from
+  the VPS, DERP may show *lower latency* than direct — but direct wins on
+  throughput, which matters for image push/pull and backups.)
+- **Tailnet route approval:** the advertised route (`<clusterIP>/32`) must be
+  approved in the Tailscale admin console for the **`javazap-cloud`** node (no
+  `autoApprovers` configured). Add an `autoApprovers.routes` entry for that node
+  so future ClusterIP changes self-approve.
 - cert-manager issues the Let's Encrypt `*.mmonteiro.dev` wildcard via Cloudflare
   DNS-01; the private gateway terminates TLS.
 

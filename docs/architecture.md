@@ -28,7 +28,7 @@ graph TB
         end
 
         Cloudflared[cloudflared<br/>HTTP/2 tunnel]
-        Connector[Tailscale Connector<br/>subnet router]
+        Connector[Host tailscaled<br/>subnet router - direct]
         CertManager[cert-manager<br/>Let's Encrypt]
 
         subgraph Services
@@ -78,13 +78,15 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Device[Your Device] -->|WireGuard| TS[Tailscale Connector]
+    Device[Your Device] -->|WireGuard direct| TS[Host tailscaled]
     TS -->|Subnet Route| PrivGW[private-istio:443]
     PrivGW -->|HTTPRoute| Svc[Service]
 ```
 
-- Tailscale Connector advertises service CIDR to your tailnet
-- Wildcard DNS `*.mmonteiro.dev → 10.43.241.105` in Cloudflare (DNS only, no proxy)
+- The host's tailscaled advertises the private-istio ClusterIP as a subnet route
+  (direct WireGuard, full throughput — not the in-cluster operator Connector,
+  which is DERP-only behind the node's NAT; see `deployment-runbook.md`)
+- Wildcard DNS `*.mmonteiro.dev → <private-istio ClusterIP>` in Cloudflare (DNS only, no proxy)
 - Private gateway terminates TLS with Let's Encrypt wildcard cert
 - HTTPRoutes on the private gateway match hostnames and route to services
 - Example: `kiali.mmonteiro.dev`, `vault.mmonteiro.dev`, `argocd.mmonteiro.dev`
@@ -100,7 +102,7 @@ All services use the same domain. Resolution differs based on where you are:
 | ArgoCD | Private | argocd.mmonteiro.dev | Tailnet only |
 
 **Public services**: CNAME record in Cloudflare pointing to the tunnel (proxy ON).
-**Private services**: Wildcard A record `*.mmonteiro.dev → 10.43.241.105` (DNS only, proxy OFF). Only reachable from tailnet via the Connector.
+**Private services**: Wildcard A record `*.mmonteiro.dev → <private-istio ClusterIP>` (DNS only, proxy OFF). Only reachable from the tailnet via the host's advertised subnet route.
 
 ## How to Expose a New Public Service
 
