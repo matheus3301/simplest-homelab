@@ -41,9 +41,10 @@ spec:
             resources:
               requests:
                 cpu: 25m
-                memory: 64Mi
+                memory: 96Mi
               limits:
-                memory: 160Mi
+                # 160Mi ran at ~95% steady; 256Mi gives scrape-burst headroom
+                memory: 256Mi
         # Alerting stack disabled: no alertmanager receivers configured, so
         # vmalert + alertmanager + default rules were pure overhead on a homelab.
         alertmanager:
