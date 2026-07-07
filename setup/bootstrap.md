@@ -41,3 +41,28 @@ kubectl create secret generic vault-root-token -n vault --from-literal=token=<ro
 # kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN=<root-token> vault kv put secret/cloudflared/tunnel-token token=<token>'
 # kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN=<root-token> vault kv put secret/cloudflare/api-token token=<token>'
 # kubectl exec -n vault vault-0 -- sh -c 'VAULT_TOKEN=<root-token> vault kv put secret/tailscale/operator client-id=<id> client-secret=<secret>'
+
+# --- ArgoCD memory tuning for small nodes (post-bootstrap) ---
+# The argocd install (01-argocd-Raw.yaml) ships without resource limits. On a
+# ~4GB node, cap the components and disable unused controllers. The concurrency
+# knobs live in git (argocd-cmd-params-ConfigMap.yaml); the rest are applied to
+# the bootstrap-managed workloads directly:
+
+# Disable unused controllers (no SSO / no notifications configured)
+kubectl scale deploy argocd-dex-server argocd-notifications-controller -n argocd --replicas=0
+
+# application-controller: cap RSS with a Go soft memory limit + resources
+kubectl -n argocd set env statefulset/argocd-application-controller GOMEMLIMIT=400MiB
+kubectl -n argocd patch statefulset argocd-application-controller --type json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"100m","memory":"256Mi"},"limits":{"memory":"512Mi"}}}]'
+
+# repo-server / server / applicationset / redis
+kubectl -n argocd set env deploy/argocd-repo-server GOMEMLIMIT=192MiB
+kubectl -n argocd patch deploy argocd-repo-server --type json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"50m","memory":"96Mi"},"limits":{"memory":"256Mi"}}}]'
+kubectl -n argocd patch deploy argocd-server --type json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"25m","memory":"64Mi"},"limits":{"memory":"192Mi"}}}]'
+kubectl -n argocd patch deploy argocd-applicationset-controller --type json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"25m","memory":"48Mi"},"limits":{"memory":"160Mi"}}}]'
+kubectl -n argocd patch deploy argocd-redis --type json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"25m","memory":"32Mi"},"limits":{"memory":"128Mi"}}}]'
